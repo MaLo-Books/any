@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chamber III — Mental Disorders | MaLo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Special+Elite&family=Creepster&family=Uncial+Antiqua&display=swap"
+        rel="stylesheet" />
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        void: '#050506', abyss: '#0a0a0c', grave: '#111115',
+                        bone: '#d8ccb8', ash: '#a8a8a8', blood: '#6e0000',
+                        vein: '#9b1a1a', pallor: '#e8dfd0',
+                    },
+                    fontFamily: {
+                        gothic: ['"Cinzel Decorative"', 'serif'],
+                        typewriter: ['"Special Elite"', 'cursive'],
+                        creep: ['Creepster', 'cursive'],
+                        ancient: ['"Uncial Antiqua"', 'cursive'],
+                    },
+                    keyframes: {
+                        flicker: {
+                            '0%,100%': { opacity: '1' }, '8%': { opacity: '0.85' }, '10%': { opacity: '1' },
+                            '32%': { opacity: '0.5' }, '34%': { opacity: '1' },
+                        },
+                        doorGlow: {
+                            '0%,100%': { boxShadow: 'inset 0 0 30px 5px #000000bb, 0 0 8px #6e000044' },
+                            '50%': { boxShadow: 'inset 0 0 60px 15px #000000dd, 0 0 20px #9b1a1a66' },
+                        },
+                        aberration: {
+                            '0%': { filter: 'none' },
+                            '25%': { filter: 'drop-shadow(3px 0 0 rgba(255,0,0,0.7)) drop-shadow(-3px 0 0 rgba(0,255,255,0.7))' },
+                            '75%': { filter: 'drop-shadow(-2px 0 0 rgba(255,0,60,0.5)) drop-shadow(2px 0 0 rgba(0,200,255,0.5))' },
+                            '100%': { filter: 'none' },
+                        },
+                    },
+                    animation: {
+                        'flicker': 'flicker 8s infinite',
+                        'door-glow': 'doorGlow 4s ease-in-out infinite',
+                        'aberration': 'aberration 0.08s steps(1) forwards',
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        html {
+            background: #050506;
+        }
+
+        body {
+            background-color: #050506;
+            color: #d8ccb8;
+            font-family: 'Special Elite', cursive;
+            overflow-x: hidden;
+            cursor: crosshair;
+        }
+
+        #lightning-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 200;
+            opacity: 0;
+            background: radial-gradient(ellipse 90% 70% at 50% 20%,
+                    rgba(210, 225, 255, 0.95) 0%, rgba(180, 200, 255, 0.80) 35%,
+                    rgba(130, 150, 220, 0.45) 65%, transparent 100%);
+        }
+
+        body.lightning #lightning-overlay {
+            opacity: 0.82;
+        }
+
+        body.lightning-after #lightning-overlay {
+            opacity: 0.18;
+            animation: aberration 0.08s steps(1) forwards;
+        }
+
+        .ghost {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9995;
+            opacity: 0;
+            transition: none;
+        }
+
+        body.lightning .ghost {
+            opacity: 1;
+        }
+
+        #ghost-text-1 {
+            top: 30%;
+            left: 5%;
+            font-family: 'Special Elite', cursive;
+            font-size: 0.78rem;
+            color: #882222;
+            letter-spacing: 0.12em;
+            transform: rotate(-3deg);
+            text-shadow: 0 0 6px #ff000066;
+            white-space: nowrap;
+        }
+
+        #ghost-text-2 {
+            bottom: 20%;
+            right: 7%;
+            font-family: 'Creepster', cursive;
+            font-size: 1.1rem;
+            letter-spacing: 0.2em;
+            color: #cc3333;
+            text-shadow: 0 0 12px #ff0000;
+            white-space: nowrap;
+        }
+
+        #ghost-text-3 {
+            top: 55%;
+            left: 50%;
+            transform: translateX(-50%) rotate(1deg);
+            font-family: 'Special Elite', cursive;
+            font-size: 0.7rem;
+            color: #661111;
+            text-shadow: 0 0 6px #ff000044;
+            white-space: nowrap;
+        }
+
+        #vignette {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9997;
+            background: radial-gradient(ellipse at center, transparent 35%, rgba(0, 0, 0, 0.45) 68%, rgba(0, 0, 0, 0.78) 100%);
+        }
+
+        #grain {
+            position: fixed;
+            inset: -50%;
+            width: 200%;
+            height: 200%;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+            animation: noiseShift 0.2s steps(1) infinite;
+        }
+
+        @keyframes noiseShift {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            20% {
+                transform: translate(-5%, -5%);
+            }
+
+            40% {
+                transform: translate(-10%, 5%);
+            }
+
+            60% {
+                transform: translate(5%, -10%);
+            }
+
+            80% {
+                transform: translate(10%, 10%);
+            }
+
+            100% {
+                transform: translate(0, 0);
+            }
+        }
+
+        #scanlines {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9993;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.04) 2px, rgba(0, 0, 0, 0.04) 4px);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #070708;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3d0000;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6e0000;
+        }
+
+        ::selection {
+            background: #6e0000;
+            color: #d8ccb8;
+        }
+
+        .title-glow {
+            text-shadow: 0 0 10px rgba(110, 0, 0, 0.4), 0 0 30px rgba(110, 0, 0, 0.2), 0 0 60px rgba(110, 0, 0, 0.1);
+        }
+
+        .blood-line {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #6e000088, #9b1a1a, #6e000088, transparent);
+        }
+
+        .ornament-line {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .ornament-line::before,
+        .ornament-line::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #3a1a1a88, transparent);
+        }
+
+        .rune-divider {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 0.6rem;
+            color: #3a1a1a;
+            letter-spacing: 0.5em;
+        }
+
+        .flicker-slow {
+            animation: flicker 8s infinite;
+        }
+
+        .iron-border {
+            border: 1px solid #1a1a20;
+            box-shadow: inset 0 0 20px #000000aa, 0 0 6px #00000088;
+        }
+
+        /* Sealed / pending card */
+        .sealed-card {
+            position: relative;
+            background: linear-gradient(160deg, #0c0c0f 0%, #09090c 100%);
+            border: 1px solid #161618;
+            overflow: hidden;
+            transition: border-color 0.4s;
+        }
+
+        .sealed-card:hover {
+            border-color: #2a1515;
+        }
+
+        .sealed-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent 70%, rgba(60, 0, 0, 0.06) 100%);
+            pointer-events: none;
+        }
+
+        .sealed-num {
+            font-family: 'Cinzel Decorative', serif;
+            color: #221818;
+        }
+
+        .sealed-lock {
+            font-size: 1.4rem;
+            color: #1e1212;
+        }
+
+        .nav-link {
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: #6e0000;
+            transition: width 0.4s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link:hover {
+            color: #cc4444;
+        }
+
+        /* Typewriter blink on the "incoming" note */
+        .blink {
+            animation: blink 1.4s step-end infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-void min-h-screen">
+    <div id="grain"></div>
+    <div id="vignette"></div>
+    <div id="scanlines"></div>
+    <div id="lightning-overlay" aria-hidden="true"></div>
+
+    <div class="ghost" id="ghost-text-1" aria-hidden="true">they all said the same thing</div>
+    <div class="ghost" id="ghost-text-2" aria-hidden="true">I KNOW WHAT I SAW</div>
+    <div class="ghost" id="ghost-text-3" aria-hidden="true">that's not what happened</div>
+
+    <!-- ── NAV ──────────────────────────────────────────────── -->
+    <nav class="fixed top-0 left-0 right-0 z-50 px-6 py-4 flex items-center justify-between"
+        style="background:linear-gradient(to bottom, rgba(5,5,6,0.97) 0%, transparent 100%); backdrop-filter:blur(4px);">
+        <a href="index.html" class="flex items-center gap-3 group">
+            <span class="font-gothic text-blood opacity-60 group-hover:opacity-100 transition-opacity text-sm">←</span>
+            <span class="font-gothic text-lg font-bold tracking-widest text-pallor flicker-slow title-glow">
+                M<span class="text-vein">a</span>L<span class="text-vein">o</span>
+            </span>
+        </a>
+        <div class="hidden md:flex gap-8 text-xs tracking-widest font-typewriter text-ash uppercase">
+            <a href="index.html#chambers" class="nav-link">All Chambers</a>
+            <a href="index.html#about" class="nav-link">The Author</a>
+            <a href="index.html#contact" class="nav-link">Contact</a>
+        </div>
+    </nav>
+
+    <!-- ── CHAMBER HEADER ───────────────────────────────────── -->
+    <section class="relative pt-36 pb-16 px-4 text-center overflow-hidden">
+        <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+            <div style="position:absolute; top:40%; left:50%; transform:translate(-50%,-50%);
+                  width:700px; height:280px;
+                  background:radial-gradient(ellipse, rgba(110,0,0,0.07) 0%, transparent 70%);
+                  filter:blur(55px);">
+            </div>
+        </div>
+
+        <div class="relative z-10">
+            <div class="text-xs font-gothic tracking-[0.6em] text-blood uppercase mb-3 opacity-70">
+                ✦ &nbsp; Chamber III &nbsp; ✦
+            </div>
+            <div class="font-gothic font-bold text-blood opacity-50 mb-3"
+                style="font-size:3.5rem; line-height:1; text-shadow:0 0 30px rgba(110,0,0,0.4);">
+                ⌀
+            </div>
+            <h1 class="font-gothic font-black tracking-[0.2em] text-pallor title-glow flicker-slow"
+                style="font-size:clamp(2rem, 7vw, 4rem); line-height:1.1;">
+                Mental Disorders
+            </h1>
+            <div class="ornament-line mt-4 max-w-sm mx-auto">
+                <span class="rune-divider">✦ ✦ ✦</span>
+            </div>
+            <p class="mt-5 font-typewriter text-sm md:text-base text-ash max-w-xl mx-auto leading-relaxed">
+                The most terrifying cage has no walls and no lock. Narrators who don't know they're unreliable.
+                Perspectives from inside a mind that has quietly gone somewhere else entirely.
+            </p>
+        </div>
+    </section>
+
+    <!-- ── BOOKS ────────────────────────────────────────────── -->
+    <section class="relative py-12 px-4 md:px-8 max-w-5xl mx-auto">
+        <div class="blood-line mb-16"></div>
+
+        <!-- "Incoming" note -->
+        <div class="max-w-xl mx-auto mb-14 text-center">
+            <div class="iron-border p-6 rounded-sm" style="background:linear-gradient(135deg,#0a0a0d,#080809);">
+                <p class="font-typewriter text-sm text-ash leading-relaxed">
+                    The manuscripts exist. The titles have not yet been cleared for release.<br />
+                    <em class="text-bone opacity-70">They are being prepared.</em>
+                    <span class="blink text-blood ml-1">▌</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Placeholder sealed slots -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+            <div class="sealed-card rounded-sm p-7">
+                <div class="relative z-10">
+                    <div class="sealed-num text-4xl font-gothic mb-4">I</div>
+                    <div class="sealed-lock mb-4">⚿</div>
+                    <div class="w-6 h-px mb-5" style="background:#1a1515;"></div>
+                    <div class="font-typewriter text-xs tracking-widest uppercase mb-4" style="color:#2a1a1a;">
+                        Title Redacted
+                    </div>
+                    <p class="font-typewriter text-xs leading-relaxed" style="color:#2a1a1a;">
+                        The narrator is certain. The narrator has always been certain. That is the problem.
+                    </p>
+                </div>
+            </div>
+
+            <div class="sealed-card rounded-sm p-7">
+                <div class="relative z-10">
+                    <div class="sealed-num text-4xl font-gothic mb-4">II</div>
+                    <div class="sealed-lock mb-4">⚿</div>
+                    <div class="w-6 h-px mb-5" style="background:#1a1515;"></div>
+                    <div class="font-typewriter text-xs tracking-widest uppercase mb-4" style="color:#2a1a1a;">
+                        Title Redacted
+                    </div>
+                    <p class="font-typewriter text-xs leading-relaxed" style="color:#2a1a1a;">
+                        There are gaps in the timeline. The narrator has explanations for all of them.
+                        None of the explanations agree with each other.
+                    </p>
+                </div>
+            </div>
+
+            <div class="sealed-card rounded-sm p-7">
+                <div class="relative z-10">
+                    <div class="sealed-num text-4xl font-gothic mb-4">III</div>
+                    <div class="sealed-lock mb-4">⚿</div>
+                    <div class="w-6 h-px mb-5" style="background:#1a1515;"></div>
+                    <div class="font-typewriter text-xs tracking-widest uppercase mb-4" style="color:#2a1a1a;">
+                        Title Redacted
+                    </div>
+                    <p class="font-typewriter text-xs leading-relaxed" style="color:#2a1a1a;">
+                        The other people in the story may not be other people. The narrator prefers not to examine this.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Notify note -->
+        <div class="mt-14 text-center">
+            <p class="font-typewriter text-xs text-ash opacity-60 mb-6 tracking-wider">
+                Want to know when Chamber III unseals?
+            </p>
+            <a href="index.html#contact" class="inline-block font-gothic text-xs tracking-[0.4em] uppercase px-8 py-3 border border-blood
+                text-bone transition-all duration-500 hover:bg-blood hover:text-pallor hover:tracking-[0.6em]"
+                style="box-shadow:0 0 12px rgba(110,0,0,0.12);">
+                Get in Touch
+            </a>
+        </div>
+
+        <div class="mt-10 text-center">
+            <a href="index.html#chambers"
+                class="font-gothic text-xs tracking-[0.3em] text-blood opacity-50 hover:opacity-80 uppercase transition-opacity">
+                ← Return to All Chambers
+            </a>
+        </div>
+    </section>
+
+    <!-- ── FOOTER ────────────────────────────────────────────── -->
+    <footer class="relative py-10 px-4 text-center mt-8">
+        <div class="blood-line mb-8"></div>
+        <div class="font-gothic text-lg font-bold tracking-widest text-pallor title-glow flicker-slow mb-2">
+            M<span class="text-vein">a</span>L<span class="text-vein">o</span>
+        </div>
+        <p class="font-typewriter text-xs text-ash tracking-widest mt-3">
+            © 2026 MaLo. All Rights Reserved.
+        </p>
+    </footer>
+
+    <script>
+        const body = document.body;
+        function lightningStrike() {
+            body.classList.add('lightning');
+            setTimeout(() => body.classList.remove('lightning'), 180);
+            setTimeout(() => body.classList.add('lightning'), 230);
+            setTimeout(() => {
+                body.classList.remove('lightning');
+                body.classList.add('lightning-after');
+                setTimeout(() => body.classList.remove('lightning-after'), 80);
+            }, 380);
+        }
+        function scheduleNextStrike() {
+            const delay = Math.random() * (180_000 - 60_000) + 60_000;
+            setTimeout(() => { lightningStrike(); scheduleNextStrike(); }, delay);
+        }
+        setTimeout(scheduleNextStrike, 9_000);
+
+        const trailDots = [];
+        for (let i = 0; i < 6; i++) {
+            const dot = document.createElement('div');
+            dot.style.cssText = `position:fixed;pointer-events:none;z-index:9999;
+        width:${3 - i * 0.35}px;height:${3 - i * 0.35}px;border-radius:50%;
+        background:rgba(110,0,0,${0.7 - i * 0.1});transform:translate(-50%,-50%);`;
+            document.body.appendChild(dot);
+            trailDots.push({ el: dot, x: 0, y: 0 });
+        }
+        let mx = 0, my = 0;
+        document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+        (function animateCursor() {
+            trailDots[0].x = mx; trailDots[0].y = my;
+            for (let i = 1; i < 6; i++) {
+                trailDots[i].x += (trailDots[i - 1].x - trailDots[i].x) * 0.35;
+                trailDots[i].y += (trailDots[i - 1].y - trailDots[i].y) * 0.35;
+            }
+            trailDots.forEach(d => { d.el.style.left = d.x + 'px'; d.el.style.top = d.y + 'px'; });
+            requestAnimationFrame(animateCursor);
+        })();
+    </script>
+</body>
+
+</html>
