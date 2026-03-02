@@ -104,9 +104,9 @@
 
     <style>
         /* ── Global darkness ─────────────────────────────────────────── */
-        :root {
-            --brightness: 0.15;
-        }
+        /* Darkness comes from the color palette, NOT a brightness filter.
+           A filter on body would dim the text too — unreadable.
+           The lightning / flicker effects use a separate overlay instead. */
 
         html {
             background: #050506;
@@ -116,19 +116,35 @@
             background-color: #050506;
             color: #d8ccb8;
             font-family: 'Special Elite', cursive;
-            filter: brightness(var(--brightness));
-            transition: filter 0.06s ease;
             overflow-x: hidden;
             cursor: crosshair;
         }
 
-        /* Lightning state — added by JS */
-        body.lightning {
-            filter: brightness(1);
+        /* ── Lightning flash overlay ─────────────────────────────────── */
+        /* Sits ABOVE page content (z-index 200) but BELOW ghost elements
+           (z-index 9995) so revealed shapes float on top of the white wash. */
+        #lightning-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 200;
+            opacity: 0;
+            background: radial-gradient(ellipse 90% 70% at 50% 20%,
+                    rgba(210, 225, 255, 0.95) 0%,
+                    rgba(180, 200, 255, 0.80) 35%,
+                    rgba(130, 150, 220, 0.45) 65%,
+                    transparent 100%);
+            /* No transition — the JS handles timing manually */
         }
 
-        body.lightning-after {
-            filter: brightness(0.3);
+        /* Primary flash — overlay snaps to near-opaque */
+        body.lightning #lightning-overlay {
+            opacity: 0.82;
+        }
+
+        /* Chromatic afterglow — dim residual + channel split */
+        body.lightning-after #lightning-overlay {
+            opacity: 0.18;
             animation: aberration 0.08s steps(1) forwards;
         }
 
@@ -466,6 +482,9 @@
     <div id="vignette"></div>
     <div id="scanlines"></div>
     <canvas id="particle-canvas"></canvas>
+
+    <!-- Lightning flash overlay (sits behind ghost elements, above page content) -->
+    <div id="lightning-overlay" aria-hidden="true"></div>
 
     <!-- Fog -->
     <div class="fog-layer animate-fog-left" style="opacity:0.6;"></div>
@@ -910,17 +929,21 @@
 
         // ════════════════════════════════════════════════════════════════
         // AMBIENT MICRO-FLICKER  (subtle, ~every 15–45s independently)
-        // Much quieter than the lightning — just a nervous system tick
+        // Uses the same overlay at very low opacity — never touches text
+        // readability. Just a nervous-system tick, barely perceptible.
         // ════════════════════════════════════════════════════════════════
 
+        const overlay = document.getElementById('lightning-overlay');
+
         function ambientFlicker() {
-            const duration = Math.random() * 80 + 40; // 40–120ms
-            body.style.setProperty('--brightness', '0.19');
+            const duration = Math.random() * 70 + 35; // 35–105ms
+            // Brief, faint ghost-light pulse — not a real flash
+            overlay.style.opacity = '0.07';
             setTimeout(() => {
-                body.style.setProperty('--brightness', '0.14');
+                overlay.style.opacity = '0.03';
                 setTimeout(() => {
-                    body.style.setProperty('--brightness', '0.15');
-                }, duration / 2);
+                    overlay.style.opacity = '0';
+                }, duration * 0.6);
             }, duration);
         }
 
