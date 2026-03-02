@@ -25,7 +25,7 @@
                         abyss: '#0a0a0c',
                         grave: '#111115',
                         bone: '#d8ccb8',
-                        ash: '#8a8a8a',
+                        ash: '#a8a8a8',
                         blood: '#6e0000',
                         vein: '#9b1a1a',
                         rust: '#5c2d0e',
@@ -194,9 +194,9 @@
             pointer-events: none;
             z-index: 9997;
             background: radial-gradient(ellipse at center,
-                    transparent 30%,
-                    rgba(0, 0, 0, 0.6) 70%,
-                    rgba(0, 0, 0, 0.95) 100%);
+                    transparent 35%,
+                    rgba(0, 0, 0, 0.45) 68%,
+                    rgba(0, 0, 0, 0.78) 100%);
         }
 
         /* ── Fog layers ──────────────────────────────────────────────── */
@@ -472,6 +472,46 @@
         .flicker-fast {
             animation: flicker 3s infinite;
         }
+
+        /* ── Summon / Corruption form ────────────────────────────────── */
+        .form-tab {
+            background: transparent;
+            color: #a8a8a8;
+            cursor: pointer;
+        }
+
+        .form-tab:hover {
+            color: #d8ccb8;
+        }
+
+        .active-tab {
+            background: #6e0000;
+            color: #e8dfd0 !important;
+        }
+
+        .form-input {
+            color: #d8ccb8;
+        }
+
+        .form-input::placeholder {
+            color: #3a2a2a;
+        }
+
+        .form-input:focus {
+            border-color: rgba(110, 0, 0, 0.7) !important;
+            box-shadow: 0 0 12px rgba(110, 0, 0, 0.12);
+        }
+
+        textarea.form-input {
+            scrollbar-width: thin;
+            scrollbar-color: #3d0000 #070708;
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
     </style>
 </head>
 
@@ -536,7 +576,7 @@
         <div class="hidden md:flex gap-8 text-xs tracking-widest font-typewriter text-ash uppercase">
             <a href="#chambers" class="nav-link">Chambers</a>
             <a href="#about" class="nav-link">The Author</a>
-            <a href="#contact" class="nav-link">Contact</a>
+            <a href="#summon" class="nav-link">Summon</a>
         </div>
 
         <!-- Mobile menu icon (three lines) -->
@@ -555,8 +595,8 @@
             class="nav-link">Chambers</a>
         <a href="#about" onclick="document.getElementById('mobile-nav').classList.add('hidden')" class="nav-link">The
             Author</a>
-        <a href="#contact" onclick="document.getElementById('mobile-nav').classList.add('hidden')"
-            class="nav-link">Contact</a>
+        <a href="#summon" onclick="document.getElementById('mobile-nav').classList.add('hidden')"
+            class="nav-link">Summon</a>
     </div>
 
 
@@ -641,7 +681,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
 
             <!-- ── Chamber I: Death ─────────── -->
-            <a href="#" class="chamber-card iron-border rounded-sm block p-8 group animate-door-glow">
+            <a href="death.html" class="chamber-card iron-border rounded-sm block p-8 group animate-door-glow">
                 <div class="relative z-10">
                     <!-- Roman numeral glyph -->
                     <div class="chamber-glyph text-5xl mb-4">I</div>
@@ -677,7 +717,7 @@
             </a>
 
             <!-- ── Chamber II: Apocalyptic ─────── -->
-            <a href="#" class="chamber-card iron-border rounded-sm block p-8 group animate-door-glow">
+            <a href="apocalyptic.html" class="chamber-card iron-border rounded-sm block p-8 group animate-door-glow">
                 <div class="relative z-10">
                     <div class="chamber-glyph text-5xl mb-4">II</div>
 
@@ -709,7 +749,8 @@
             </a>
 
             <!-- ── Chamber III: Mental Disorders ── -->
-            <a href="#" class="chamber-card iron-border rounded-sm block p-8 group animate-door-glow">
+            <a href="mental-disorders.html"
+                class="chamber-card iron-border rounded-sm block p-8 group animate-door-glow">
                 <div class="relative z-10">
                     <div class="chamber-glyph text-5xl mb-4">III</div>
 
@@ -821,29 +862,157 @@
 
 
     <!-- ═══════════════════════════════════════════════════════════════ -->
-    <!-- CONTACT / CONNECT                                               -->
+    <!-- SUMMON / CORRUPTION                                             -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
-    <section id="contact" class="relative py-24 px-4 md:px-8 max-w-2xl mx-auto text-center">
+    <section id="summon" class="relative py-24 px-4 md:px-8 max-w-2xl mx-auto text-center">
 
         <div class="blood-line mb-16"></div>
 
         <div class="text-xs font-gothic tracking-[0.6em] text-blood uppercase mb-3 opacity-80">
             ✦ &nbsp; Correspondence &nbsp; ✦
         </div>
-        <h2 class="font-gothic font-bold text-2xl tracking-widest text-pallor title-glow mb-6">
+        <h2 class="font-gothic font-bold text-2xl tracking-widest text-pallor title-glow mb-4">
             Reach Into the Dark
         </h2>
-
         <p class="font-typewriter text-sm text-ash leading-relaxed mb-10 max-w-lg mx-auto">
-            Something you want to discuss. A theory about where a story goes. A project worth considering
-            in the dark. All of it is welcome here.
+            Join the list to hear when new work surfaces — or simply send a message into the void.
+            Both doors open to the same place.
         </p>
 
-        <a href="mailto:malo@example.com" class="inline-block font-gothic text-xs tracking-[0.4em] uppercase px-10 py-4 border border-blood text-bone
-              transition-all duration-500 hover:bg-blood hover:text-pallor hover:shadow-lg hover:tracking-[0.6em]"
-            style="box-shadow: 0 0 15px rgba(110,0,0,0.15);">
-            Send a Message
-        </a>
+        <!-- ── TAB TOGGLE ── -->
+        <div class="flex justify-center gap-0 mb-8" role="tablist">
+            <button id="tab-get-corrupted" role="tab" aria-selected="true" onclick="switchTab('corruption')" class="form-tab active-tab font-gothic text-xs tracking-[0.35em] uppercase px-8 py-3
+                       border border-blood transition-all duration-300">
+                Corruption
+            </button>
+            <button id="tab-message" role="tab" aria-selected="false" onclick="switchTab('message')" class="form-tab font-gothic text-xs tracking-[0.35em] uppercase px-8 py-3
+                       border border-blood border-l-0 transition-all duration-300">
+                Send&nbsp;a&nbsp;Message
+            </button>
+        </div>
+
+        <!-- ── CORRUPTION PANEL ──
+             Submits to Formspree. Sign up free at https://formspree.io,
+             create a form, then replace YOUR_FORM_ID in the action URL below.
+             Every submission is emailed to you AND stored in your Formspree
+             dashboard so you can export the corruption list at any time.
+        ── -->
+        <div id="panel-get-corrupted">
+            <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST" onsubmit="handleSubmit(event,'corruption')"
+                class="summon-form iron-border p-8 text-left"
+                style="background:linear-gradient(160deg,#0a0a0d 0%,#080809 100%);">
+
+                <input type="hidden" name="_subject" value="New MaLo corruption" />
+                <input type="hidden" name="form_type" value="corruption" />
+
+                <div class="mb-5">
+                    <label class="block font-gothic text-xs tracking-[0.3em] uppercase text-blood mb-2">
+                        Your Name <span class="opacity-50">(optional)</span>
+                    </label>
+                    <input type="text" name="name" placeholder="First name is fine" class="form-input w-full bg-transparent border border-blood border-opacity-30
+                                  text-bone font-typewriter text-sm px-4 py-3
+                                  focus:outline-none focus:border-opacity-80 transition-all duration-300"
+                        style="background:rgba(5,5,6,0.7);" />
+                </div>
+
+                <div class="mb-8">
+                    <label class="block font-gothic text-xs tracking-[0.3em] uppercase text-blood mb-2">
+                        Email Address <span class="text-vein">*</span>
+                    </label>
+                    <input type="email" name="email" required placeholder="your@email.com" class="form-input w-full bg-transparent border border-blood border-opacity-30
+                                  text-bone font-typewriter text-sm px-4 py-3
+                                  focus:outline-none focus:border-opacity-80 transition-all duration-300"
+                        style="background:rgba(5,5,6,0.7);" />
+                </div>
+
+                <p class="font-typewriter text-xs text-ash opacity-50 mb-6 leading-relaxed">
+                    You'll hear from me when new work is ready — new releases, announcements, and
+                    the occasional dispatch from somewhere dark. No noise otherwise.
+                </p>
+
+                <div class="text-center">
+                    <button type="submit" class="submit-btn font-gothic text-xs tracking-[0.4em] uppercase px-10 py-3
+                                   border border-blood text-bone transition-all duration-500
+                                   hover:bg-blood hover:text-pallor hover:tracking-[0.6em]"
+                        style="box-shadow:0 0 15px rgba(110,0,0,0.15);">
+                        Join the List
+                    </button>
+                </div>
+            </form>
+            <div id="success-corruption" class="hidden iron-border p-10 text-center"
+                style="background:linear-gradient(160deg,#0a0a0d 0%,#080809 100%);">
+                <p class="font-gothic text-lg tracking-widest text-blood mb-3">✦</p>
+                <p class="font-typewriter text-sm text-bone leading-relaxed">
+                    You're in. I'll reach out when something worth reading surfaces.
+                </p>
+            </div>
+        </div>
+
+        <!-- ── MESSAGE PANEL ── -->
+        <div id="panel-message" class="hidden">
+            <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST" onsubmit="handleSubmit(event,'message')"
+                class="summon-form iron-border p-8 text-left"
+                style="background:linear-gradient(160deg,#0a0a0d 0%,#080809 100%);">
+
+                <input type="hidden" name="_subject" value="Message for MaLo" />
+                <input type="hidden" name="form_type" value="message" />
+
+                <div class="mb-5">
+                    <label class="block font-gothic text-xs tracking-[0.3em] uppercase text-blood mb-2">
+                        Your Name
+                    </label>
+                    <input type="text" name="name" placeholder="How should I address you?" class="form-input w-full bg-transparent border border-blood border-opacity-30
+                                  text-bone font-typewriter text-sm px-4 py-3
+                                  focus:outline-none focus:border-opacity-80 transition-all duration-300"
+                        style="background:rgba(5,5,6,0.7);" />
+                </div>
+
+                <div class="mb-5">
+                    <label class="block font-gothic text-xs tracking-[0.3em] uppercase text-blood mb-2">
+                        Email Address <span class="text-vein">*</span>
+                    </label>
+                    <input type="email" name="email" required placeholder="your@email.com" class="form-input w-full bg-transparent border border-blood border-opacity-30
+                                  text-bone font-typewriter text-sm px-4 py-3
+                                  focus:outline-none focus:border-opacity-80 transition-all duration-300"
+                        style="background:rgba(5,5,6,0.7);" />
+                </div>
+
+                <div class="mb-8">
+                    <label class="block font-gothic text-xs tracking-[0.3em] uppercase text-blood mb-2">
+                        Your Message <span class="text-vein">*</span>
+                    </label>
+                    <textarea name="message" required rows="5" placeholder="Say whatever you came here to say…" class="form-input w-full bg-transparent border border-blood border-opacity-30
+                                     text-bone font-typewriter text-sm px-4 py-3 resize-none
+                                     focus:outline-none focus:border-opacity-80 transition-all duration-300"
+                        style="background:rgba(5,5,6,0.7);"></textarea>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="submit-btn font-gothic text-xs tracking-[0.4em] uppercase px-10 py-3
+                                   border border-blood text-bone transition-all duration-500
+                                   hover:bg-blood hover:text-pallor hover:tracking-[0.6em]"
+                        style="box-shadow:0 0 15px rgba(110,0,0,0.15);">
+                        Send Into the Dark
+                    </button>
+                </div>
+            </form>
+            <div id="success-message" class="hidden iron-border p-10 text-center"
+                style="background:linear-gradient(160deg,#0a0a0d 0%,#080809 100%);">
+                <p class="font-gothic text-lg tracking-widest text-blood mb-3">✦</p>
+                <p class="font-typewriter text-sm text-bone leading-relaxed">
+                    Message received. I'll find my way back to you.
+                </p>
+            </div>
+        </div>
+
+        <!-- Direct email fallback -->
+        <p class="font-typewriter text-xs text-ash opacity-40 mt-8 tracking-wider">
+            Or write directly —
+            <a href="mailto:FatherDarknessMaLo@gmail.com"
+                class="text-blood opacity-70 hover:opacity-100 transition-opacity underline underline-offset-2">
+                FatherDarknessMaLo@gmail.com
+            </a>
+        </p>
 
     </section>
 
@@ -889,6 +1058,53 @@
         // ════════════════════════════════════════════════════════════════
 
         const body = document.body;
+
+        /* ── Tab toggle and form submit ───────────────────────── */
+        function switchTab(tab) {
+            const tabs = ['corruption', 'message'];
+            tabs.forEach(t => {
+                const btn = document.getElementById('tab-' + t);
+                const panel = document.getElementById('panel-' + t);
+                const isActive = (t === tab);
+                btn.classList.toggle('active-tab', isActive);
+                btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                panel.classList.toggle('hidden', !isActive);
+            });
+        }
+
+        async function handleSubmit(e, type) {
+            e.preventDefault();
+            const form = e.target;
+            const btn = form.querySelector('.submit-btn');
+            const successEl = document.getElementById('success-' + type);
+
+            /* Swap btn label while sending */
+            btn.textContent = 'Sending…';
+            btn.disabled = true;
+
+            try {
+                const resp = await fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form),
+                    headers: { 'Accept': 'application/json' },
+                });
+
+                if (resp.ok) {
+                    form.classList.add('hidden');
+                    successEl.classList.remove('hidden');
+                } else {
+                    /* Formspree returns JSON errors */
+                    const data = await resp.json().catch(() => ({}));
+                    const msg = (data.errors || []).map(err => err.message).join(', ')
+                        || 'Something went wrong. Try emailing directly.';
+                    btn.textContent = msg;
+                    btn.disabled = false;
+                }
+            } catch (_err) {
+                btn.textContent = 'Network error — please try again.';
+                btn.disabled = false;
+            }
+        }
 
         function lightningStrike() {
             // ── Flash 1 (primary, bright) ──
